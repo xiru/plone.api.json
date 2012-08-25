@@ -1,0 +1,22 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:genericsetup="http://namespaces.zope.org/genericsetup"
+    i18n_domain="plone.api.json">
+
+  <genericsetup:registerProfile
+      name="default"
+      title="plone.api.json Default Profile"
+      directory="profiles/default"
+      description='Extension profile for the plone.api.json'
+      provides="Products.GenericSetup.interfaces.EXTENSION"
+      />
+
+  <genericsetup:importStep
+      name="plone.api.json.various"
+      title="spdo: miscellaneous import steps"
+      description="Various import steps that are not handled by GS import/export handlers."
+      handler="plone.api.json.setuphandlers.setupVarious">
+    <depends name="content"/>
+  </genericsetup:importStep>
+
+</configure>
