@@ -25,7 +25,7 @@ setup(name='plone.api.json',
       zip_safe=False,
       install_requires=[
           'setuptools',
-          'plone.api',
+          'five.grok',
           # -*- Extra requirements: -*-
       ],
       entry_points="""

@@ -1,8 +1,10 @@
 <configure
     xmlns="http://namespaces.zope.org/zope"
     xmlns:five="http://namespaces.zope.org/five"
+    xmlns:grok="http://namespaces.zope.org/grok"
     i18n_domain="plone.api.json">
-
   <five:registerPackage package="." initialize=".initialize" />
-
+  <includeDependencies package="." />
+  <grok:grok package="." />
+  <include file="profiles.zcml" />
 </configure>
