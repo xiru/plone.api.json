@@ -37,10 +37,8 @@ class JSONAPI(grok.View):
     def render(self):
         """ Run the plone.api method
         """
-        r = self.request
         method = getattr(getattr(api, self.apimod), self.apimet)
-        params = r.form
-        params['request'] = r
+        params = self.request.form
         # api.portal.localized_time
         if params.get('datetime', None) is not None:
             params['datetime'] = DateTime(params['datetime'])
@@ -51,4 +49,5 @@ class JSONAPI(grok.View):
         # api.content.create
         if self.apimod == 'content' and self.apimet == 'create':
             result = result.absolute_url()
+        #TODO: convert the output returned by api.content.get to dict
         return json.dumps(result)
