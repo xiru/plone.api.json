@@ -6,5 +6,6 @@
   <five:registerPackage package="." initialize=".initialize" />
   <includeDependencies package="." />
   <grok:grok package="." />
+  <include package=".browser" />
   <include file="profiles.zcml" />
 </configure>
