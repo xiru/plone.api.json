@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import json
+from DateTime import DateTime
 from zope.interface import implements
 from zope.publisher.interfaces import IPublishTraverse
 from zExceptions import NotFound
@@ -33,9 +34,21 @@ class JSONAPI(grok.View):
                 return self
         raise NotFound()
 
-    def render(self, method):
+    def render(self):
+        """ Run the plone.api method
         """
-        """
-        request = self.request
+        r = self.request
         method = getattr(getattr(api, self.apimod), self.apimet)
-        return json.dumps(method(**request.form))
+        params = r.form
+        params['request'] = r
+        # api.portal.localized_time
+        if params.get('datetime', None) is not None:
+            params['datetime'] = DateTime(params['datetime'])
+        # api.content.create
+        if params.get('container', None) is not None:
+            params['container'] = api.portal.get().restrictedTraverse(params['container'])
+        result = method(**params)
+        # api.content.create
+        if self.apimod == 'content' and self.apimet == 'create':
+            result = result.absolute_url()
+        return json.dumps(result)
