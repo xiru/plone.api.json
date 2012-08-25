@@ -34,20 +34,35 @@ class JSONAPI(grok.View):
                 return self
         raise NotFound()
 
+    def _normalize_parameters(self, params):
+        portal = api.portal.get()
+        traverse = portal.restrictedTraverse
+        d = {'datetime': DateTime,
+             'properties': dict,
+             'roles': list,
+             'groups': list,
+             'container': traverse,
+             'source': traverse,
+             'target': traverse,
+             'obj': traverse}
+        for k, v in d.items():
+            if params.get(k, None) is not None:
+                params[k] = v(params[k])
+        return params
+
+    def _serializable_output(self, result):
+        if self.apimod == 'content' and self.apimet == 'create':
+            return result.absolute_url()
+        return result
+
     def render(self):
         """ Run the plone.api method
         """
         method = getattr(getattr(api, self.apimod), self.apimet)
-        params = self.request.form
-        # api.portal.localized_time
-        if params.get('datetime', None) is not None:
-            params['datetime'] = DateTime(params['datetime'])
-        # api.content.create
-        if params.get('container', None) is not None:
-            params['container'] = api.portal.get().restrictedTraverse(params['container'])
-        result = method(**params)
-        # api.content.create
-        if self.apimod == 'content' and self.apimet == 'create':
-            result = result.absolute_url()
-        #TODO: convert the output returned by api.content.get to dict
-        return json.dumps(result)
+        params = self._normalize_parameters(self.request.form)
+        result = self._serializable_output(method(**params))
+        try:
+            return json.dumps(result)
+        except TypeError:
+            return json.dumps(None)
+
